@@ -9,12 +9,15 @@ Created on 2016. 9. 8.
 import os
 import sys
 import json
+import time
 from pygics import *
 
 COMMANDS = ['create', 'delete']
 DEBUG = False
 
-CONTTPL = '''metadata:
+CONTTPL = '''apiVersion: v1
+kind: Pod
+metadata:
   name: %s-%s
   labels:
     app: %s
@@ -42,12 +45,14 @@ def do(cmd, clause, name):
         _, out = Command(clause).do()
         if name not in out:
             _, out = Command(cmd).do()
+        time.sleep(1)
             
 def execute(cmd):
     if DEBUG:
         print cmd
     else:
         _, out = Command(cmd).do()
+    time.sleep(1)
             
 def write(path, data):
     if DEBUG:
