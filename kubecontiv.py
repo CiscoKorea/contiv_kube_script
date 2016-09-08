@@ -12,7 +12,7 @@ import json
 from pygics import *
 
 COMMANDS = ['create', 'delete']
-DEBUG = True
+DEBUG = False
 
 CONTTPL = '''metadata:
   name: %s-%s
@@ -43,6 +43,12 @@ def do(cmd, clause, name):
         if name not in out:
             _, out = Command(cmd).do()
             
+def execute(cmd):
+    if DEBUG:
+        print cmd
+    else:
+        _, out = Command(cmd).do()
+            
 def write(path, data):
     if DEBUG:
         print 'FILE :', path
@@ -50,6 +56,7 @@ def write(path, data):
     else:
         with open(path, 'w') as fd:
             fd.write(data)
+            fd.flush()
 
 def create(desc):
     
@@ -99,8 +106,11 @@ def create(desc):
                     
                     for cmd in pod.command:
                         podexec += CONTCMD % cmd
-                        
-                    write(tenant.name + '-' + pod.name + '.yaml', podexec)
+                    
+                    file_name = tenant.name + '-' + pod.name + '.yaml'
+                    
+                    write(file_name, podexec)
+                    execute('kubectl create -f %s' % file_name)
 
 def delete(desc):
     
