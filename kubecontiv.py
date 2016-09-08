@@ -43,22 +43,28 @@ def do(cmd, clause, name):
         print cmd
     else:
         _, out = Command(clause).do()
-        if name not in out:
+        for o in out:
+            if name in o: break
+        else:
+            print cmd
             _, out = Command(cmd).do()
-        time.sleep(1)
+            time.sleep(1)
             
 def execute(cmd):
     if DEBUG:
         print cmd
     else:
+        print cmd
         _, out = Command(cmd).do()
-    time.sleep(1)
+        time.sleep(1)
             
 def write(path, data):
     if DEBUG:
         print 'FILE :', path
         print data
     else:
+        print 'FILE :', path
+        print data
         with open(path, 'w') as fd:
             fd.write(data)
             fd.flush()
