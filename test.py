@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 '''
 Created on 2016. 9. 8.
 
@@ -9,4 +10,5 @@ from pygics import *
 
 if __name__ == '__main__':
     print 'Hello'
+    print ''
     pass

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 '''
 Created on 2016. 9. 8.
 
@@ -26,6 +27,8 @@ def delete(desc):
     pass    
 
 if __name__ == '__main__':
+
+    print "Hello"
     
     if len(sys.argv) != 3: usages()
     command = sys.argv[1]
