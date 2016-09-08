@@ -1,3 +1,4 @@
+#!/usr/bin/python
 '''
 Created on 2016. 9. 8.
 
