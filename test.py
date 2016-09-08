@@ -14,6 +14,6 @@ if __name__ == '__main__':
     
 #     ret, out = cmd.add('tenant').add('ls').add('|').add('grep').add('default').do()
 
-    ret, out = cmd.do()
+    _, out = cmd.do()
     
-    print ret, out
+    print out

@@ -7,15 +7,34 @@
 					"name": "sample-app",
 					"group": [
 						{
-							"name": "sample-epg",
+							"name": "sample-epg1",
 							"type": "data",
 							"encap": "vlan",
 							"tag": "100",
 							"subnet": "10.1.1.0/24",
 							"gateway": "10.1.1.1",
-							"pods": [
+							"pod": [
 								{
-									"name": "sample-pod",
+									"name": "sample-pod1",
+									"cname": "bbox",
+									"image": "contiv/nc-busybox",
+									"command": [
+										"sleep",
+										"7200"
+									]
+								}
+							]
+						},
+						{
+							"name": "sample-epg2",
+							"type": "data",
+							"encap": "vlan",
+							"tag": "101",
+							"subnet": "20.1.1.0/24",
+							"gateway": "20.1.1.1",
+							"pod": [
+								{
+									"name": "sample-pod2",
 									"cname": "bbox",
 									"image": "contiv/nc-busybox",
 									"command": [

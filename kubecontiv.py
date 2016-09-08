@@ -12,15 +12,95 @@ import json
 from pygics import *
 
 COMMANDS = ['create', 'delete']
+DEBUG = True
+
+CONTTPL = '''metadata:
+  name: %s-%s
+  labels:
+    app: %s
+    io.contiv.tenant: %s
+    io.contiv.net-group: %s
+    io.contiv.network: %s-bd
+spec:
+  containers:
+  - name: %s
+    image: %s
+    command:
+'''
+
+CONTCMD = '      - %s\n'
 
 def usages():
     print 'kubecontiv.py <command> <description>'
     print '\t<command> : create, delete'
     exit()
-    
+
+def do(cmd, clause, name):
+    if DEBUG:
+        print cmd
+    else:
+        _, out = Command(clause).do()
+        if name not in out:
+            _, out = Command(cmd).do()
+            
+def write(path, data):
+    if DEBUG:
+        print 'FILE :', path
+        print data
+    else:
+        with open(path, 'w') as fd:
+            fd.write(data)
+
 def create(desc):
     
-    pass
+    for tenant in desc.tenant:
+        do('netctl tenant create %s' % tenant.name,
+           'netctl tenant ls | grep %s' % tenant.name,
+           tenant.name)
+        
+        app_names = L()
+        for app in tenant.app:
+            app_names << app.name
+            
+            group_names = L()
+            for group in app.group:
+                group_names << group.name
+                
+                net_name = group.name + '-bd'
+                
+                do('netctl network create -t %s -n %s -e %s -p %s -s %s -g %s %s' % (tenant.name, group.type, group.encap, group.tag, group.subnet, group.gateway, net_name),
+                   'netctl network ls -t %s | grep %s' % (tenant.name, net_name),
+                   net_name)
+                
+                do('netctl group create -t %s %s %s' % (tenant.name, net_name, group.name),
+                   'netctl group ls -t %s | grep %s' % (tenant.name, group.name),
+                   group.name)
+            
+            do('netctl app-profile create -t %s -g %s %s' % (tenant.name, ','.join(group_names), app.name),
+               'netctl app-profile ls -t %s | grep %s' % (tenant.name, app.name),
+               app.name)
+            
+    for tenant in desc.tenant:
+        
+        for app in tenant.app:
+            
+            for group in app.group:
+                
+                for pod in group.pod:
+                    
+                    podexec = CONTTPL % (tenant.name,
+                                         pod.name,
+                                         app.name,
+                                         tenant.name,
+                                         group.name,
+                                         group.name,
+                                         pod.cname,
+                                         pod.image)
+                    
+                    for cmd in pod.command:
+                        podexec += CONTCMD % cmd
+                        
+                    write(tenant.name + '-' + pod.name + '.yaml', podexec)
 
 def delete(desc):
     
@@ -84,18 +164,5 @@ if __name__ == '__main__':
 # 
 # 
 # 
-# metadata:
-#   name: $TENANT-$PODNAME
-#   labels:
-#     app: $APPPROF
-#     io.contiv.tenant: $TENANT
-#     io.contiv.net-group: $GROUP
-#     io.contiv.network: $NETWORK
-# spec:
-#   containers:
-#   - name: bbox
-#     image: contiv/nc-busybox
-#     command:
-#       - sleep
-#       - "7200"
+
 #     
