@@ -1,13 +1,13 @@
 {
 	"tenant": [
 		{
-			"name": "sample",
+			"name": "sample2",
 			"app": [
 				{
-					"name": "sample-app",
+					"name": "sample2-app",
 					"group": [
 						{
-							"name": "sample-epg1",
+							"name": "sample2-epg1",
 							"type": "data",
 							"encap": "vlan",
 							"tag": "120",
@@ -15,31 +15,12 @@
 							"gateway": "10.1.1.1",
 							"pod": [
 								{
-									"name": "sample-pod1",
+									"name": "sample2-pod1",
 									"cname": "bbox",
 									"image": "contiv/nc-busybox",
 									"command": [
 										"sleep",
-										"7200"
-									]
-								}
-							]
-						},
-						{
-							"name": "sample-epg2",
-							"type": "data",
-							"encap": "vlan",
-							"tag": "121",
-							"subnet": "20.1.1.0/24",
-							"gateway": "20.1.1.1",
-							"pod": [
-								{
-									"name": "sample-pod2",
-									"cname": "bbox",
-									"image": "contiv/nc-busybox",
-									"command": [
-										"sleep",
-										"7200"
+										"\"7200\""
 									]
 								}
 							]
