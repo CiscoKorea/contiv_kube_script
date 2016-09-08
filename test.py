@@ -12,6 +12,6 @@ if __name__ == '__main__':
     
     cmd = Command('netctl')
     
-    ret, out = cmd.add('tenant').add('ls').do()
+    ret, out = cmd.add('tenant').add('ls').add('|').add('grep').add('default').do()
     
     print ret, out
