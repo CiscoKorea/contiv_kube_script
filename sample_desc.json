@@ -10,7 +10,7 @@
 							"name": "sample-epg1",
 							"type": "data",
 							"encap": "vlan",
-							"tag": "100",
+							"tag": "120",
 							"subnet": "10.1.1.0/24",
 							"gateway": "10.1.1.1",
 							"pod": [
@@ -29,7 +29,7 @@
 							"name": "sample-epg2",
 							"type": "data",
 							"encap": "vlan",
-							"tag": "101",
+							"tag": "121",
 							"subnet": "20.1.1.0/24",
 							"gateway": "20.1.1.1",
 							"pod": [
