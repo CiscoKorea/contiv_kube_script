@@ -10,8 +10,10 @@ from pygics import *
 
 if __name__ == '__main__':
     
-    cmd = Command('netctl')
+    cmd = Command('netctl tenant ls | grep default')
     
-    ret, out = cmd.add('tenant').add('ls').add('|').add('grep').add('default').do()
+#     ret, out = cmd.add('tenant').add('ls').add('|').add('grep').add('default').do()
+
+    ret, out = cmd.do()
     
     print ret, out
