@@ -9,6 +9,9 @@ Created on 2016. 9. 8.
 from pygics import *
 
 if __name__ == '__main__':
-    print 'Hello'
-    print ''
-    pass
+    
+    cmd = Command('netctl')
+    
+    ret, out = cmd.add('tenant').add('ls').do()
+    
+    print ret, out
