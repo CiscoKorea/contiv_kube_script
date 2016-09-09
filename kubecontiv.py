@@ -6,14 +6,10 @@ Created on 2016. 9. 8.
 @author: "comfact"
 '''
 
-import os
-import sys
-import json
-import time
 from pygics import *
 
 COMMANDS = ['create', 'delete']
-DEBUG = False
+DEBUG = True
 
 CONTTPL = '''apiVersion: v1
 kind: Pod
@@ -38,43 +34,46 @@ def usages():
     print '\t<command> : create, delete'
     exit()
 
-def do(cmd, clause, name):
-    if DEBUG:
-        print cmd
+def condexec(cmd, clause, condition):
+    if DEBUG: print 'EXECUTE >', clause; print 'EXECUTE >', cmd; return
+
+    print 'EXECUTE >', clause
+    ret, out = Command(clause).do()
+    if ret != 0: print 'ERROR! :', clause; exit(1)
+    for o in out:
+        if re.search('%s\s+' % condition, o): break
     else:
-        _, out = Command(clause).do()
-        for o in out:
-            if name in o: break
-        else:
-            print cmd
-            _, out = Command(cmd).do()
-            time.sleep(1)
-            
-def execute(cmd):
-    if DEBUG:
-        print cmd
-    else:
-        print cmd
-        _, out = Command(cmd).do()
+        print 'EXECUTE >', cmd
+        ret, out = Command(cmd).do()
+        if ret != 0: print 'ERROR! :', clause; exit(1)
+        else: print ''.join(out)
         time.sleep(1)
-            
-def write(path, data):
-    if DEBUG:
-        print 'FILE :', path
-        print data
-    else:
-        print 'FILE :', path
-        print data
-        with open(path, 'w') as fd:
-            fd.write(data)
-            fd.flush()
+    
+def mustexec(cmd):
+    if DEBUG: print 'EXECUTE >', cmd; return
+    
+    print 'EXECUTE >', cmd
+    ret, out = Command(cmd).do()
+    if ret != 0: print 'ERROR! :', cmd; exit(1)
+    else: print ''.join(out)
+    time.sleep(1)
+        
+def writefile(path, data):
+    if DEBUG: print 'FILE >', path; print data; return
+    
+    print 'FILE >', path
+    print data
+    with open(path, 'w') as fd:
+        fd.write(data)
+        fd.flush()
+    time.sleep(1)
 
 def create(desc):
     
     for tenant in desc.tenant:
-        do('netctl tenant create %s' % tenant.name,
-           'netctl tenant ls | grep %s' % tenant.name,
-           tenant.name)
+        condexec('netctl tenant create %s' % tenant.name,
+                 'netctl tenant ls | grep %s' % tenant.name,
+                 tenant.name)
         
         app_names = L()
         for app in tenant.app:
@@ -86,17 +85,17 @@ def create(desc):
                 
                 net_name = group.name + '-bd'
                 
-                do('netctl network create -t %s -n %s -e %s -p %s -s %s -g %s %s' % (tenant.name, group.type, group.encap, group.tag, group.subnet, group.gateway, net_name),
-                   'netctl network ls -t %s | grep %s' % (tenant.name, net_name),
-                   net_name)
+                condexec('netctl network create -t %s -n %s -e %s -p %s -s %s -g %s %s' % (tenant.name, group.type, group.encap, group.tag, group.subnet, group.gateway, net_name),
+                         'netctl network ls -t %s | grep %s' % (tenant.name, net_name),
+                         net_name)
                 
-                do('netctl group create -t %s %s %s' % (tenant.name, net_name, group.name),
-                   'netctl group ls -t %s | grep %s' % (tenant.name, group.name),
-                   group.name)
+                condexec('netctl group create -t %s %s %s' % (tenant.name, net_name, group.name),
+                         'netctl group ls -t %s | grep %s' % (tenant.name, group.name),
+                         group.name)
             
-            do('netctl app-profile create -t %s -g %s %s' % (tenant.name, ','.join(group_names), app.name),
-               'netctl app-profile ls -t %s | grep %s' % (tenant.name, app.name),
-               app.name)
+            condexec('netctl app-profile create -t %s -g %s %s' % (tenant.name, ','.join(group_names), app.name),
+                     'netctl app-profile ls -t %s | grep %s' % (tenant.name, app.name),
+                     app.name)
             
     for tenant in desc.tenant:
         
@@ -120,12 +119,32 @@ def create(desc):
                     
                     file_name = tenant.name + '-' + pod.name + '.yaml'
                     
-                    write(file_name, podexec)
-                    execute('kubectl create -f %s' % file_name)
-
+                    writefile(file_name, podexec)
+                    mustexec('kubectl create -f %s' % file_name)
+                    
 def delete(desc):
     
-    pass    
+    for tenant in desc.tenant:
+        
+        for app in tenant.app:
+            
+            for group in app.group:
+                
+                for pod in group.pod:
+                    
+                    file_name = tenant.name + '-' + pod.name + '.yaml'
+                    
+                    mustexec('kubectl delete -f %s' % file_name)
+                    mustexec('rm -rf %s' % file_name)
+                    
+                net_name = group.name + '-bd'
+                
+                mustexec('netctl network delete -t %s %s' % (tenant.name, net_name))
+                mustexec('netctl group delete -t %s %s' % (tenant.name, group.name))
+            
+            mustexec('netctl app-profile delete -t %s %s' % (tenant.name, app.name))
+            
+        mustexec('netctl tenant delete %s' % tenant.name)
 
 if __name__ == '__main__':
     
@@ -144,46 +163,4 @@ if __name__ == '__main__':
     print ""
     
     if command == 'create': create(desc)
-    elif command == 'delete': delete(desc) 
-    
-    
-# "TENANT=test
-# 
-# # Network #########################################################
-# NETWORK=test-net
-# NET_TYPE=data
-# NET_ENC=vlan
-# NET_TAG=112
-# NET_SUB=10.1.1.0/24
-# NET_GW=10.1.1.1
-# 
-# # Group ###########################################################
-# GROUP=test-epg
-# 
-# # App Profile #####################################################
-# APPPROF=test-app
-# 
-# # Pod #############################################################
-# PODNAME=test" 
-# 
-# echo "Create Tenant"
-# echo "RUN : netctl tenant create $TENANT"
-# netctl tenant create $TENANT
-# sleep 1
-# 
-# echo "RUN : netctl network create -t $TENANT -n $NET_TYPE -e $NET_ENC -p $NET_TAG -s $NET_SUB -g $NET_GW $NETWORK"
-# netctl network create -t $TENANT -n $NET_TYPE -e $NET_ENC -p $NET_TAG -s $NET_SUB -g $NET_GW $NETWORK
-# sleep 1
-# 
-# echo "RUN : netctl group create -t $TENANT $NETWORK $GROUP"
-# netctl group create -t $TENANT $NETWORK $GROUP
-# sleep 1
-# 
-# echo "RUN : netctl app-profile create -t $TENANT -g $GROUP $APPPROF"
-# netctl app-profile create -t $TENANT -g $GROUP $APPPROF
-# sleep 1
-# 
-# 
-# 
-
-#     
+    elif command == 'delete': delete(desc)

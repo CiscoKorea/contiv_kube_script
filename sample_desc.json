@@ -10,7 +10,7 @@
 							"name": "sample-epg1",
 							"type": "data",
 							"encap": "vlan",
-							"tag": "120",
+							"tag": "100",
 							"subnet": "10.1.1.0/24",
 							"gateway": "10.1.1.1",
 							"pod": [
@@ -25,15 +25,6 @@
 								},
 								{
 									"name": "pod2",
-									"cname": "bbox",
-									"image": "contiv/nc-busybox",
-									"command": [
-										"sleep",
-										"\"7200\""
-									]
-								},
-								{
-									"name": "pod3",
 									"cname": "bbox",
 									"image": "contiv/nc-busybox",
 									"command": [
