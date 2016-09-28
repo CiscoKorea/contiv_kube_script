@@ -10,6 +10,7 @@ from pygics import *
 
 COMMANDS = ['create', 'delete']
 DEBUG = True
+#DEBUG = False
 
 CONTTPL = '''apiVersion: v1
 kind: Pod
@@ -19,7 +20,7 @@ metadata:
     app: %s
     io.contiv.tenant: %s
     io.contiv.net-group: %s
-    io.contiv.network: %s-bd
+    io.contiv.network: %s-bd1
 spec:
   containers:
   - name: %s
@@ -39,7 +40,6 @@ def condexec(cmd, clause, condition):
 
     print 'EXECUTE >', clause
     ret, out = Command(clause).do()
-    if ret != 0: print 'ERROR! :', clause; exit(1)
     for o in out:
         if re.search('%s\s+' % condition, o): break
     else:
@@ -83,7 +83,7 @@ def create(desc):
             for group in app.group:
                 group_names << group.name
                 
-                net_name = group.name + '-bd'
+                net_name = group.name + '-bd1'
                 
                 condexec('netctl network create -t %s -n %s -e %s -p %s -s %s -g %s %s' % (tenant.name, group.type, group.encap, group.tag, group.subnet, group.gateway, net_name),
                          'netctl network ls -t %s | grep %s' % (tenant.name, net_name),
@@ -137,7 +137,7 @@ def delete(desc):
                     mustexec('kubectl delete -f %s' % file_name)
                     mustexec('rm -rf %s' % file_name)
                     
-                net_name = group.name + '-bd'
+                net_name = group.name + '-bd1'
                 
                 mustexec('netctl network delete -t %s %s' % (tenant.name, net_name))
                 mustexec('netctl group delete -t %s %s' % (tenant.name, group.name))
