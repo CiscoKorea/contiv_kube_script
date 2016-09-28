@@ -136,13 +136,17 @@ def delete(desc):
                     
                     mustexec('kubectl delete -f %s' % file_name)
                     mustexec('rm -rf %s' % file_name)
-                    
-                net_name = group.name + '-bd1'
-                
-                mustexec('netctl network delete -t %s %s' % (tenant.name, net_name))
-                mustexec('netctl group delete -t %s %s' % (tenant.name, group.name))
+        
+    for tenant in desc.tenant:
+        
+        for app in tenant.app:
             
             mustexec('netctl app-profile delete -t %s %s' % (tenant.name, app.name))
+            
+            for group in app.group:
+                
+                mustexec('netctl group delete -t %s %s' % (tenant.name, group.name))
+                mustexec('netctl network delete -t %s %s' % (tenant.name, group.name + '-bd1'))
             
         mustexec('netctl tenant delete %s' % tenant.name)
 
