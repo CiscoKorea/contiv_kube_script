@@ -11,10 +11,9 @@ from pygics import *
 #===============================================================================
 # User Options
 #===============================================================================
-DEBUG = True
-#DEBUG = False
+DEBUG = False
 TRYCOUNT = 3
-DELAY = 1
+DELAY = 2
 
 #===============================================================================
 # Static Vars
@@ -189,7 +188,7 @@ def delete(desc):
                     pod_name = tenant.name + '-' + prof.name + '-' + group.name + '-' + pod.name
                     file_name = '%s/%s.yaml' % (desc.project, pod_name)
                     execute('kubectl delete -f %s' % file_name)
-                    execute('rm -rf %s' % file_name)
+                    Command('rm -rf %s' % file_name).do()
                     
         for prof in tenant.profile:
             print 'DELETE PROFILE >', prof.name
@@ -216,10 +215,11 @@ def delete(desc):
                 ('netctl tenant ls', 'in', tenant.name))
 
 if __name__ == '__main__':
-    
-    if len(sys.argv) != 3: usages()
+    alen = len(sys.argv)
+    if alen < 3: usages()
     command = sys.argv[1]
     file = sys.argv[2]
+    if alen >= 4 and sys.argv[3] == 'debug': DEBUG = True
     if command not in COMMANDS: usages()
     if not os.path.exists(file): usages()
     
