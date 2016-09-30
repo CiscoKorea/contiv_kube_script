@@ -76,7 +76,7 @@ def execute(cmd, cond=None, weak=False):
         print ''.join(out)
         time.sleep(DELAY)
     else:
-        if weak == True: exit(1)
+        if weak == False: exit(1)
     time.sleep(DELAY)
     
 def write_file(path, data):
