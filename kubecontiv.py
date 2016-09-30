@@ -117,8 +117,8 @@ def create(desc):
                         if 'to_group' in rule: rule_options += '--to-group %s ' % rule.to_group
                         if 'to_ip' in rule: rule_options += '--to-ip-address %s ' % rule.to_ip
                     else: continue
-                    if 'protocol' in pol: rule_options += '--protocol %s ' % pol.protocol
-                    if 'port' in pol: rule_options += '--port %s ' % pol.port
+                    if 'protocol' in rule: rule_options += '--protocol %s ' % rule.protocol
+                    if 'port' in rule: rule_options += '--port %s ' % rule.port
                     rule_options += '--action %s' % rule.action
                 except Exception as e:
                     print 'ERROR >', str(e)

@@ -10,7 +10,7 @@
 							"direction": "in",
 							"from_network": "net1",
 							"from_group": "epg2",
-							"proto": "tcp",
+							"protocol": "tcp",
 							"port": "6379",
 							"action": "allow"
 						}
