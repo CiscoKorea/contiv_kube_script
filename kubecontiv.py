@@ -49,7 +49,7 @@ def usages():
     exit()
 
 def execute(cmd, cond=None):
-    print 'execute >'
+    print 'execute >', cmd
     if DEBUG: return
     if cond != None:
         clause = cond[0]
@@ -69,7 +69,7 @@ def execute(cmd, cond=None):
                     print '%s is already exist' % value
                     return
     
-    print 'command >', cmd
+    print 'do >'
     for i in range(0, TRYCOUNT):
         ret, out = Command(cmd).do()
         if ret == 0: break
