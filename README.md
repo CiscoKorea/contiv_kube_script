@@ -5,7 +5,7 @@
 	$ kubecontiv.py create <DESCRIPTION NAME>.json [debug]
 	$ Kubecontiv.py delete <DESCRIPTION NAME>.json [debug]
 
-## Descriptino Json
+## Description Json
 
 already sample json in working tree : [sample_desc.json](https://github.com/CiscoKorea/contiv_kube_script/blob/master/sample_desc.json)
 
