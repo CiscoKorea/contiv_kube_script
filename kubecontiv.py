@@ -47,7 +47,7 @@ def usages():
     print '\t<command> : create, delete'
     exit()
 
-def execute(cmd, cond=None):
+def execute(cmd, cond=None, weak=False):
     print 'execute >', cmd
     if DEBUG: return
     if cond != None:
@@ -74,7 +74,9 @@ def execute(cmd, cond=None):
         if ret == 0: break
         print 'error! (%d)' % i
         print ''.join(out)
-    else: exit(1)
+        time.sleep(DELAY)
+    else:
+        if weak == True: exit(1)
     time.sleep(DELAY)
     
 def write_file(path, data):
@@ -187,32 +189,37 @@ def delete(desc):
                     print 'DELETE POD >', pod.name
                     pod_name = tenant.name + '-' + prof.name + '-' + group.name + '-' + pod.name
                     file_name = '%s/%s.yaml' % (desc.project, pod_name)
-                    execute('kubectl delete -f %s' % file_name)
+                    execute('kubectl delete -f %s' % file_name, weak=True)
                     Command('rm -rf %s' % file_name).do()
                     
         for prof in tenant.profile:
             print 'DELETE PROFILE >', prof.name
             execute('netctl app-profile delete -t %s %s' % (tenant.name, prof.name),
-                    ('netctl app-profile ls -t %s' % tenant.name, 'in', prof.name))
+                    ('netctl app-profile ls -t %s' % tenant.name, 'in', prof.name),
+                    weak=True)
             
             for group in prof.group:
                 print 'DELETE GROUP >', group.name
                 execute('netctl group delete -t %s %s' % (tenant.name, group.name),
-                        ('netctl group ls -t %s' % tenant.name, 'in', group.name))
+                        ('netctl group ls -t %s' % tenant.name, 'in', group.name),
+                        weak=True)
             
             for net in prof.net:
                 print 'DELETE NETWORK >', net.name
                 execute('netctl network delete -t %s %s' % (tenant.name, net.name),
-                        ('netctl network ls -t %s' % tenant.name, 'in', net.name))
+                        ('netctl network ls -t %s' % tenant.name, 'in', net.name),
+                        weak=True)
                 
         for pol in tenant.policy:
             print 'DELETE POLICY >', pol.name
             execute('netctl policy delete -t %s %s' % (tenant.name, pol.name),
-                    ('netctl policy ls -t %s' % tenant.name, 'in', pol.name))
+                    ('netctl policy ls -t %s' % tenant.name, 'in', pol.name),
+                    weak=True)
         
         print 'DELETE TENANT >', tenant.name
         execute('netctl tenant delete %s' % tenant.name,
-                ('netctl tenant ls', 'in', tenant.name))
+                ('netctl tenant ls', 'in', tenant.name),
+                weak=True)
 
 if __name__ == '__main__':
     alen = len(sys.argv)
