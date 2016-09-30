@@ -1,4 +1,4 @@
-# contiv_kube_script
+# kubecontiv script
 
 ## Usage
 
