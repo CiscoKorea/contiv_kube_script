@@ -73,7 +73,7 @@ def execute(cmd, cond=None, weak=False, infi=False):
         for i in range(0, TRYCOUNT):
             ret, out = Command(cmd).do()
             if ret == 0: print 'ok'; break
-            print '\nerror! (%d)' % i
+            print '\nerror!'
             print ''.join(out)
             time.sleep(DELAY)
         else:
@@ -82,7 +82,7 @@ def execute(cmd, cond=None, weak=False, infi=False):
         while True:
             ret, out = Command(cmd).do()
             if ret == 0: print 'ok'; break
-            print '\nerror! (%d)' % i
+            print '\nerror!'
             print ''.join(out)
             time.sleep(DELAY)
     time.sleep(DELAY)
