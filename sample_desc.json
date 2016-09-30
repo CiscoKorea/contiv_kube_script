@@ -2,29 +2,61 @@
 	"tenant": [
 		{
 			"name": "sample",
-			"app": [
+			"policy": [
 				{
-					"name": "sample-app",
-					"group": [
+					"name": "policy1",
+					"rule": [
 						{
-							"name": "sample-epg1",
+							"direction": "in",
+							"from_network": "net1",
+							"from_group": "epg2",
+							"proto": "tcp",
+							"port": "6379",
+							"action": "allow"
+						}
+					]
+				}
+			],
+			"profile": [
+				{
+					"name": "prof1",
+					"net": [
+						{
+							"name": "net1",
 							"type": "data",
 							"encap": "vlan",
 							"tag": "100",
 							"subnet": "10.1.1.0/24",
-							"gateway": "10.1.1.1",
+							"gateway": "10.1.1.1"
+						}
+					],
+					"group": [
+						{
+							"name": "epg1",
+							"net": "net1",
+							"policy": [
+								"policy1"
+							],
 							"pod": [
 								{
-									"name": "pod1",
+									"name": "db",
 									"cname": "bbox",
 									"image": "contiv/nc-busybox",
 									"command": [
 										"sleep",
 										"\"7200\""
 									]
-								},
+								}
+							]
+						},
+						{
+							"name": "epg2",
+							"net": "net1",
+							"policy": [
+							],
+							"pod": [
 								{
-									"name": "pod2",
+									"name": "app",
 									"cname": "bbox",
 									"image": "contiv/nc-busybox",
 									"command": [
