@@ -47,7 +47,7 @@ def usages():
     print '\t<command> : create, delete'
     exit()
 
-def execute(cmd, cond=None, weak=False):
+def execute(cmd, cond=None, weak=False, infi=False):
     print 'execute >', cmd
     if DEBUG: return
     if cond != None:
@@ -68,15 +68,23 @@ def execute(cmd, cond=None, weak=False):
                     print '%s is already exist' % value
                     return
     
-    print 'do >'
-    for i in range(0, TRYCOUNT):
-        ret, out = Command(cmd).do()
-        if ret == 0: break
-        print 'error! (%d)' % i
-        print ''.join(out)
-        time.sleep(DELAY)
+    print 'do >',
+    if infi == False:
+        for i in range(0, TRYCOUNT):
+            ret, out = Command(cmd).do()
+            if ret == 0: print 'ok'; break
+            print '\nerror! (%d)' % i
+            print ''.join(out)
+            time.sleep(DELAY)
+        else:
+            if weak == False: exit(1)
     else:
-        if weak == False: exit(1)
+        while True:
+            ret, out = Command(cmd).do()
+            if ret == 0: print 'ok'; break
+            print '\nerror! (%d)' % i
+            print ''.join(out)
+            time.sleep(DELAY)
     time.sleep(DELAY)
     
 def write_file(path, data):
@@ -208,7 +216,7 @@ def delete(desc):
                 print 'DELETE NETWORK >', net.name
                 execute('netctl network delete -t %s %s' % (tenant.name, net.name),
                         ('netctl network ls -t %s' % tenant.name, 'in', net.name),
-                        weak=True)
+                        infi=True)
                 
         for pol in tenant.policy:
             print 'DELETE POLICY >', pol.name
