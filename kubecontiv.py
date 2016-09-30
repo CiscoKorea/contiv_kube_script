@@ -150,8 +150,8 @@ def create(desc):
             cnt = 1
             for rule in pol.rule:
                 if 'options' in rule: 
-                    print 'APPLY RULE >', rule.script
-                    execute('netctl rule-add -t %s %s %s %d' % (tenant.name, rule.script, pol.name, cnt))
+                    print 'APPLY RULE >', rule.options
+                    execute('netctl rule-add -t %s %s %s %d' % (tenant.name, rule.options, pol.name, cnt))
                     cnt += 1
         
         for prof in tenant.profile:
