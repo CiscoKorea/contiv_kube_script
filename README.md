@@ -42,7 +42,7 @@ Rule mapped to Rule on APIC
 		
 		"from_network": <NETWORK NAME>, 	# if direction is "in"
 		"from_group": <GROUP NAME>, 		# if direction is "in"
-		"from_ip": <IP ADDRESS>,				# if direction is "in"
+		"from_ip": <IP ADDRESS>,			# if direction is "in"
 		
 		"to_network": <NETWORK NAME>,		# if direction is "out"
 		"to_group": <GROUP NAME>,			# if direction is "out"
