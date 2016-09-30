@@ -140,7 +140,7 @@ def create(desc):
             for group in prof.group:
                 prof.group_names << group.name
                 pol_script = ''
-                for pol_name in group.policy.keys(): pol_script += '--policy %s ' % pol_name
+                for pol_name in group.policy: pol_script += '--policy %s ' % pol_name
                 
                 print 'CREATE GROUP >', group.name
                 execute('netctl group create -t %s %s%s %s' % (tenant.name, pol_script, group.net, group.name),
